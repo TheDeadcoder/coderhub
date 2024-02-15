@@ -57,15 +57,21 @@
 	</div>
 </nav>
 <div class="card lg:card-side bg-base-100 shadow-xl ml-14 mr-14 mt-10">
+	{#if isLoading}
+		<div class="toast toast-top toast-end">
+			<div class="alert alert-info">
+				<span>Please check your mail for confirmation</span>
+			</div>
+		</div>{/if}
 	<div class="grid grid-cols-2 gap-12">
 		<figure>
 			<img
-				src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/avento.gif"
+				src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/68747470733a2f2f696d616765732e73717561726573706163652d63646e2e636f6d2f636f6e74656e742f76312f3537363966633430316236333162616231616464623261622f313534313538303631313632342d5445363451474b524a4738535741495553374e532f6b653.gif"
 				alt="Album"
 			/>
 		</figure>
 		<div class="card-body">
-			<h2 class="card-title text-2xl font-extrabold">Login To your Account</h2>
+			<h2 class="card-title text-2xl font-extrabold">Sign Up to CoderHub</h2>
 			<form
 				use:enhance
 				action="?/login"
@@ -137,13 +143,8 @@
 					{#if isLoading}
 						<span class="loading loading-spinner loading-xs"></span>
 					{/if}
-					Sign In
+					Sign Up
 				</button>
-				<div class="text-sm mt-2">
-					<a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-500">
-						Don't Have an Account? Sign Up Here
-					</a>
-				</div>
 			</form>
 		</div>
 	</div>

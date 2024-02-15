@@ -39,15 +39,24 @@ export const actions = {
         }
 
         const body = form.data;
-        // console.log(body);
 
-        const { data, error: err } = await event.locals.supabase.auth.signInWithPassword({
+
+
+        const { data: dtt, error: err } = await event.locals.supabase.auth.signUp({
             email: body.email as string,
-            password: body.password as string
+            password: body.password as string,
+            options: {
+                emailRedirectTo: `http://localhost:5173/login`,
+            },
         });
+        if (dtt.user && dtt.user.identities && dtt.user.identities.length === 0) {
+            return message(form, 'Email already in use', {
+                status: 400
+            });
+        }
 
         if (err) {
-            // console.log(err);
+            console.log(err);
             if (err instanceof AuthApiError && err.status === 400) {
                 return message(form, 'Invalid credentials', {
                     status: 400
@@ -58,10 +67,26 @@ export const actions = {
                 status: 500
             })
         }
+        else {
+
+            const { data: dt, error: err1 } = await event.locals.supabase
+                .from('userdetails')
+                .insert([
+                    { id: dtt.user.id, name: dtt.user?.email.split('@')[0], email: dtt.user?.email },
+                ])
+                .select()
+
+            if (err1) {
+                return message(form, 'Server error. Try again later', {
+                    status: 500
+                })
+            }
+
+        }
 
         //Add user if not already added 
 
 
-        throw redirect(303, '/protected/home');
+        //throw redirect(303, '/protected/home');
     }
 };
