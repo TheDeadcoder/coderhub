@@ -1,9 +1,12 @@
 import { fail, redirect } from '@sveltejs/kit'
 import { error } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
-
+let articleNow;
 let userNow;
-export const load = async ({ locals: { supabase, getSession } }) => {
+
+export const load = async ({ params, locals: { supabase, getSession } }) => {
+    console.log(params.articleid);
     const session = await getSession()
 
     if (!session) {
@@ -12,7 +15,6 @@ export const load = async ({ locals: { supabase, getSession } }) => {
     const {
         data: { user }
     } = await supabase.auth.getUser();
-    console.log("Homer backend");
     // console.log(user);
 
 
@@ -22,5 +24,19 @@ export const load = async ({ locals: { supabase, getSession } }) => {
         .eq('email', user.email)
     console.log(err);
     userNow = userdetails[0];
-    return { userNow };
+
+
+    let { data: blog, error: err1 } = await supabase
+        .from('blog')
+        .select("*")
+        .eq('id', params.articleid)
+
+    articleNow = blog[0];
+
+
+
+
+
+    return { articleNow, userNow };
+
 }

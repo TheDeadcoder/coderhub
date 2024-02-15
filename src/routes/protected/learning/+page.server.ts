@@ -12,7 +12,6 @@ export const load = async ({ locals: { supabase, getSession } }) => {
     const {
         data: { user }
     } = await supabase.auth.getUser();
-    console.log("Homer backend");
     // console.log(user);
 
 

@@ -12,7 +12,6 @@ export const load = async ({ locals: { supabase, getSession } }) => {
     const {
         data: { user }
     } = await supabase.auth.getUser();
-    console.log("Homer backend");
     // console.log(user);
 
 
@@ -22,5 +21,11 @@ export const load = async ({ locals: { supabase, getSession } }) => {
         .eq('email', user.email)
     console.log(err);
     userNow = userdetails[0];
-    return { userNow };
+
+    let { data: blog, error: err1 } = await supabase
+        .from('blog')
+        .select('*')
+
+    console.log(err1);
+    return { userNow, blog };
 }

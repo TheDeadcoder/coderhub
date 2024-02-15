@@ -97,7 +97,10 @@
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToHome}>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToHome}
+					>
 						<img
 							src="https://aaitclybvvendvuswytq.supabase.co/storage/v1/object/public/BDeHR/dashboard.svg"
 							alt="Dashboard Icon"
@@ -127,10 +130,7 @@
 						/>
 						Learning
 					</li>
-					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToProjects}
-					>
+					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToProjects}>
 						<img
 							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/code-branch-svgrepo-com.svg?t=2024-02-15T12%3A15%3A03.215Z"
 							alt="Add New Hospital Icon"

@@ -14,7 +14,7 @@ export const load = async ({ locals: { supabase, getSession } }) => {
   const {
     data: { user }
   } = await supabase.auth.getUser();
-  console.log(user);
+  // console.log(user);
 
 
   let { data: userdetails, error: err1 } = await supabase

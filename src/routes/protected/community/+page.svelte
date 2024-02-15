@@ -4,8 +4,8 @@
 	import Themeswitcher from '$lib/themeswitcher.svelte';
 
 	export let data;
-	let { session, supabase, userNow } = data;
-	$: ({ session, supabase, userNow } = data);
+	let { session, supabase, userNow, blog } = data;
+	$: ({ session, supabase, userNow, blog } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -26,6 +26,27 @@
 	}
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
+	}
+	function openAddForm() {
+		window.open(`/protected/newpost`, '_self');
+	}
+	function formatDate(dateString) {
+		const dateObj = new Date(dateString);
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec'
+		];
+		return `${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
 	}
 </script>
 
@@ -97,7 +118,10 @@
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToHome}>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToHome}
+					>
 						<img
 							src="https://aaitclybvvendvuswytq.supabase.co/storage/v1/object/public/BDeHR/dashboard.svg"
 							alt="Dashboard Icon"
@@ -106,7 +130,7 @@
 						Home
 					</li>
 					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						class="flex items-center p-4 bg-red-400 cursor-default"
 						on:click={navigateToCommunity}
 					>
 						<img
@@ -152,13 +176,69 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-64 w-full">
+		<div class="ml-72 w-full mt-10">
+			<button class="btn" on:click={openAddForm}>
+				<div class="flex flex-row items-center space-x-3">
+					<img
+						src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/plus-add-svgrepo-com.svg"
+						alt="Dashboard Icon"
+						class="h-5 mr-1 hover:rotate-12"
+					/>
+					<h1 class="text-lg">Add New Post</h1>
+				</div>
+			</button>
+			<div class="grid grid-cols-4 mt-6 p-6 w-full">
+				{#each blog as currblog, i}
+					<a
+						href="/protected/article/{currblog.id}"
+						class="m-3 overflow-hidden bg-white hover:bg-[#efeded] rounded-md shadow-2xl pb-3 cursor-pointer"
+					>
+						<div class="hover:scale-105">
+							<div class="mb-3 p-3 rounded-full">
+								<img
+									src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/Coderhub%20Blogs.png"
+									alt="User "
+									class=" w-[100%] items-center justify-center object-contain object-center"
+								/>
+							</div>
+							<div class="px-4">
+								<div>
+									<h1 class="text-2xl font-semibold mb-2">
+										{currblog.title}
+									</h1>
+								</div>
+								<div class="flex flex-row">
+									<!-- <img
+										src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/299092_calendar_icon.svg"
+										alt="User "
+										class="w-6 h-6 mr-3 hover:scale-105 hover:rotate-12"
+									/> -->
+									<p class="text-sm text-justify font-light">
+										{formatDate(currblog.createdat)} | {currblog.timetoread} minutes read
+									</p>
+
+									<!-- <img
+										src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/stopwatch-svgrepo-com.svg"
+										alt="User "
+										class="w-5 h-5 mr-1 hover:scale-105 hover:rotate-12"
+									/> -->
+									<!-- <p class="text-sm">{currblog.timetoread} minutes read</p> -->
+								</div>
+
+								<div>
+									<p class="text-md text-justify">
+										{currblog.description.slice(0, 100)} ...
+									</p>
+								</div>
+							</div>
+						</div>
+					</a>
+				{/each}
+			</div>
 			<pre>{JSON.stringify(userNow, null, 2)}</pre>
 		</div>
 	</div>
 </main>
-
-<h1>"home e asi"</h1>
 
 <style>
 	.appbar {

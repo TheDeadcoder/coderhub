@@ -2,6 +2,18 @@
 	// @ts-nocheck
 
 	import Themeswitcher from '$lib/themeswitcher.svelte';
+	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
+	import 'quill/dist/quill.snow.css';
+
+	let quill;
+	let editor;
+
+	let title;
+	let description;
+	let content;
+	let timetoread;
+	let tags;
 
 	export let data;
 	let { session, supabase, userNow } = data;
@@ -26,6 +38,52 @@
 	}
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
+	}
+	function openAddForm() {
+		window.open(`/protected/community/newpost`, '_self');
+	}
+	function formatDate(dateString) {
+		const dateObj = new Date(dateString);
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec'
+		];
+		return `${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+	}
+	onMount(async () => {
+		const Quill = await import('quill');
+		quill = new Quill.default(editor, {
+			theme: 'snow',
+			modules: {
+				toolbar: [
+					[{ header: [1, 2, false] }],
+					['bold', 'italic', 'underline'],
+					['image', 'code-block', 'link']
+				]
+			},
+			placeholder: 'Body of the article goes here...'
+		});
+	});
+	let isLoading = false;
+	async function onSubmit() {
+		isLoading = true;
+		setTimeout(() => {
+			isLoading = false;
+		}, 10000);
+	}
+	function makeStrong() {
+		content = quill.root.innerHTML;
+		console.log(content);
 	}
 </script>
 
@@ -87,78 +145,79 @@
 		</ul>
 	</div>
 </nav>
-<main class=" min-h-screen mt-28">
-	<div class="flex">
-		<div class="fixed">
-			<div class="h-screen fixed w-64 shadow-md z-0 py-4">
-				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<ul class="text-base font-semibold">
-					<!-- svelte-ignore missing-declaration -->
-					<!-- svelte-ignore missing-declaration -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToHome}>
-						<img
-							src="https://aaitclybvvendvuswytq.supabase.co/storage/v1/object/public/BDeHR/dashboard.svg"
-							alt="Dashboard Icon"
-							class="w-6 h-6 mr-2"
-						/>
-						Home
-					</li>
-					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToCommunity}
-					>
-						<img
-							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/community-svgrepo-com.svg?t=2024-02-15T12%3A14%3A23.484Z"
-							alt="Query Icon"
-							class="w-6 h-6 mr-2"
-						/>
-						Community
-					</li>
-					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToLearning}
-					>
-						<img
-							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/blackboard-class-svgrepo-com.svg"
-							alt="Add New Hospital Icon"
-							class="w-6 h-6 mr-2"
-						/>
-						Learning
-					</li>
-					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToProjects}
-					>
-						<img
-							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/code-branch-svgrepo-com.svg?t=2024-02-15T12%3A15%3A03.215Z"
-							alt="Add New Hospital Icon"
-							class="w-6 h-6 mr-2"
-						/>
-						Projects
-					</li>
-					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToProfile}
-					>
-						<img
-							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/defaultuser.jpg"
-							alt="Messages Icon"
-							class="w-6 h-6 mr-2"
-						/>
-						Profile
-					</li>
-				</ul>
-			</div>
+<div class="min-h-screen mt-32 ml-16 mr-16">
+	<h1 class="text-2xl font-extrabold">Creating a New Blog</h1>
+	<form
+		use:enhance
+		action="?/create"
+		method="POST"
+		class="mt-6"
+		on:submit={() => {
+			onSubmit();
+		}}
+	>
+		<label for="title" class="label text-left mb-3 flex flex-row">
+			<span>Blog Title</span>
+		</label>
+		<input
+			class="input mb-4"
+			type="text"
+			id="title"
+			name="title"
+			bind:value={title}
+			placeholder="Enter The Title of the Blog"
+		/>
+		<label for="description" class="label text-left mb-3">
+			<span>Blog Description</span>
+		</label>
+		<input
+			class="input mb-4"
+			type="text"
+			id="description"
+			name="description"
+			bind:value={description}
+			placeholder="Enter Brief Description"
+		/>
+		<label for="timetoread" class="label text-left mb-3">
+			<span>Time</span>
+		</label>
+		<input
+			class="input mb-4"
+			type="number"
+			id="timetoread"
+			name="timetoread"
+			bind:value={timetoread}
+			placeholder="Minutes required to read"
+		/>
+		<label for="tags" class="label text-left mb-3">
+			<span>Tags</span>
+		</label>
+		<input
+			class="input mb-4"
+			type="text"
+			id="tags"
+			name="tags"
+			bind:value={tags}
+			placeholder="Tags (separate by comma)"
+		/>
+		<input hidden id="content" name="content" bind:value={content} />
+		<div class="grid gap-2">
+			<label for="content">Blog Content</label>
+			<div bind:this={editor} id="editor" />
 		</div>
-		<div class="ml-64 w-full">
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
-		</div>
-	</div>
-</main>
-
-<h1>"home e asi"</h1>
+		<button
+			type="submit"
+			class="btn btn-accent mt-8 w-full"
+			disabled={isLoading}
+			on:click={makeStrong}
+		>
+			{#if isLoading}
+				<span class="loading loading-spinner loading-xs"></span>
+			{/if}
+			Sign In
+		</button>
+	</form>
+</div>
 
 <style>
 	.appbar {
