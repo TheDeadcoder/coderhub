@@ -2,10 +2,11 @@
 	// @ts-nocheck
 
 	import Themeswitcher from '$lib/themeswitcher.svelte';
+	import { onMount } from 'svelte';
 
 	export let data;
-	let { session, supabase, userNow, viewUserNow } = data;
-	$: ({ session, supabase, userNow, viewUserNow } = data);
+	let { session, supabase, userNow, viewUserNow, friendspending, friend, friendspendingmy } = data;
+	$: ({ session, supabase, userNow, viewUserNow, friendspending, friend, friendspendingmy } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -27,6 +28,9 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
+	function navigateToFriend() {
+		window.open(`/protected/communicate/${viewUserNow.id}/chat`, '_self');
+	}
 	function calculateAge(dob) {
 		const today = new Date();
 		const birthDate = new Date(dob);
@@ -37,6 +41,14 @@
 		}
 		return age;
 	}
+	async function checkifme() {
+		if (userNow.id === viewUserNow.id) {
+			window.open(`/protected/profile`, '_self');
+		}
+	}
+	onMount(async () => {
+		checkifme();
+	});
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -128,7 +140,7 @@
 						Home
 					</li>
 					<li
-						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						class="flex items-center p-4 bg-red-400 cursor-default"
 						on:click={navigateToCommunity}
 					>
 						<img
@@ -160,7 +172,10 @@
 						/>
 						Projects
 					</li>
-					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToProfile}>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToProfile}
+					>
 						<img
 							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/defaultuser.jpg"
 							alt="Messages Icon"
@@ -171,7 +186,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-64 w-full">
+		<div class="ml-64 w-full mt-6">
 			<div class="grid grid-cols-3 gap-12">
 				<div class="flex flex-col ml-8">
 					<div class="avatar">
@@ -185,6 +200,25 @@
 					<p>
 						{viewUserNow.about}
 					</p>
+
+					{#if friendspending.length > 0}
+						<button class="btn btn-primary p-2 mt-6 w-3/4" disabled={true}>
+							Friend Request Sent
+						</button>
+					{:else if friend.length > 0}
+						<button class="btn btn-success p-2 mt-6 w-3/4" on:click={navigateToFriend}>
+							Communicate
+						</button>
+					{:else if friendspendingmy.length > 0}
+						<form action="?/acceptfriend" method="POST">
+							<button type="submit" class="btn btn-success p-2 mt-6 w-3/4"> Accept Request </button>
+						</form>
+					{:else}
+						<form action="?/addfriend" method="POST">
+							<button type="submit" class="btn btn-primary p-2 mt-6 w-3/4"> + Add Friend </button>
+						</form>
+					{/if}
+
 					<div class="card bg-transparent mt-10 font-semibold">
 						<div>
 							<div class="flex flex-row">
@@ -237,6 +271,7 @@
 		</div>
 	</div>
 </main>
+<!-- <pre>{JSON.stringify(friend, null, 2)}</pre> -->
 
 <h1>"home e asi"</h1>
 

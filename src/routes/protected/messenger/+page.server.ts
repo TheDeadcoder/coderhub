@@ -1,5 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit'
 import { error } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 
 let userNow;
@@ -76,8 +77,57 @@ export const load = async ({ locals: { supabase, getSession } }) => {
         .select("*")
         .eq('user2', userNow.id)
 
+    const friendPendingwithName2 = await Promise.all(friendspending.map(async (frienditem) => {
+        let { data: username, error: pendingError } = await supabase
+            .from('userdetails')
+            .select("*")
+            .eq('id', frienditem.user1);
+
+        if (pendingError) {
+            console.error(pendingError.message);
+        }
+        frienditem = username[0];
+
+        return {
+            frienditem
+        };
+    }));
+
+
+    return { userNow, friendwithName, friendwithName2, friendPendingwithName2 };
+}
+
+
+export const actions = {
+
+    acceptreq: async ({ url, locals: { supabase, getSession } }) => {
+        const friendid = url.searchParams.get("id")
+
+        const { data: dt, error: err } = await supabase
+            .from('friends')
+            .insert([
+                { user1: userNow.id, user2: friendid },
+            ])
+            .select()
 
 
 
-    return { userNow, friendwithName, friendwithName2, friendspending };
+
+        const { error: err2 } = await supabase
+            .from('friendspending')
+            .delete()
+            .eq('user1', friendid)
+            .eq('user2', userNow.id)
+
+
+
+
+        if (err) console.log(err)
+        if (err2) console.log(err2)
+
+        else throw redirect(303, `/protected/messenger`);
+
+    },
+
+
 }

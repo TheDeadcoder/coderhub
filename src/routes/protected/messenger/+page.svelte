@@ -10,8 +10,10 @@
 		// console.log('logout done');
 		window.open('/login', '_self');
 	};
-	let { session, supabase, userNow, friendwithName, friendwithName2, friendspending } = data;
-	$: ({ session, supabase, userNow, friendwithName, friendwithName2, friendspending } = data);
+	let { session, supabase, userNow, friendwithName, friendwithName2, friendPendingwithName2 } =
+		data;
+	$: ({ session, supabase, userNow, friendwithName, friendwithName2, friendPendingwithName2 } =
+		data);
 	let allfriends = [...friendwithName, ...friendwithName2];
 </script>
 
@@ -110,6 +112,26 @@
 		{/each}
 	</div>
 	<h1 class="text-xl font-extrabold ml-8">Pending Requests</h1>
+	<div class="grid grid-cols-4 mt-6 p-6 w-full">
+		{#each friendPendingwithName2 as currFriend, i}
+			<div class="card p-3 shadow-xl items-center justify-center">
+				<img
+					src={currFriend.frienditem.image}
+					alt="Dashboard Icon"
+					class="w-32 mt-1 hover:rotate-12 rounded-full"
+				/>
+				<div class="flex flex-row space-x-4">
+					<form action="?/acceptreq&id={currFriend.frienditem.id}" method="POST">
+						<button type="submit" class="btn btn-success"> Accept Request </button>
+					</form>
+					<a href="/protected/viewonly/{currFriend.frienditem.id}" class="btn btn-primary">
+						View Profile
+					</a>
+				</div>
+			</div>
+		{/each}
+	</div>
+	<pre>{JSON.stringify(friendPendingwithName2, null, 2)}</pre>
 </div>
 
 <style>
