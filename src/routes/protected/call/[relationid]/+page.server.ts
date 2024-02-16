@@ -69,7 +69,7 @@ export async function load(event: PageServerLoadEvent) {
 
         friendNow = userdetails2[0]
 
-        //console.log(token, uid, channel)
+        console.log(token, uid, channel)
         return { token, uid, channel, userNow, friendNow };
     } catch (e) {
         console.log("bugggg");
