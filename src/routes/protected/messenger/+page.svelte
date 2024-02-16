@@ -4,8 +4,14 @@
 	import Themeswitcher from '$lib/themeswitcher.svelte';
 
 	export let data;
-	let { session, supabase, userNow, friendwithName, friendwithName2 } = data;
-	$: ({ session, supabase, userNow, friendwithName, friendwithName2 } = data);
+	const handleSignOut = async () => {
+		// console.log('logout start');
+		await data.supabase.auth.signOut();
+		// console.log('logout done');
+		window.open('/login', '_self');
+	};
+	let { session, supabase, userNow, friendwithName, friendwithName2, friendspending } = data;
+	$: ({ session, supabase, userNow, friendwithName, friendwithName2, friendspending } = data);
 	let allfriends = [...friendwithName, ...friendwithName2];
 </script>
 
@@ -58,16 +64,26 @@
 			<li>
 				<a href="/protected/messenger" class="flex items-center p-1 font-bold mr-3"
 					><img
-						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/messenger-facebook-svgrepo-com.svg"
+						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/earth-globe-connection-svgrepo-com.svg"
 						alt="Dashboard Icon"
 						class="w-8 mt-1 hover:rotate-12"
 					/>
 				</a>
 			</li>
+			<li>
+				<button class="btn" on:click={handleSignOut}>
+					<img
+						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/logout-svgrepo-com.svg"
+						alt="Dashboard Icon"
+						class="w-8 mt-1 hover:rotate-12"
+					/>
+				</button>
+			</li>
 		</ul>
 	</div>
 </nav>
 <div class="w-full h-screen mt-32">
+	<h1 class="text-xl font-extrabold ml-8">All Friends</h1>
 	<div class="grid grid-cols-4 mt-6 p-6 w-full">
 		{#each allfriends as currfriend, i}
 			<div class="card p-6 shadow-xl flex flex-col items-center justify-center">
@@ -93,6 +109,7 @@
 			</div>
 		{/each}
 	</div>
+	<h1 class="text-xl font-extrabold ml-8">Pending Requests</h1>
 </div>
 
 <style>

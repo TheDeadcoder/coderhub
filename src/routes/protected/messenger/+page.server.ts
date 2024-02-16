@@ -71,5 +71,13 @@ export const load = async ({ locals: { supabase, getSession } }) => {
     if (err2) console.log(err2)
 
 
-    return { userNow, friendwithName, friendwithName2 };
+    let { data: friendspending, error: err5 } = await supabase
+        .from('friendspending')
+        .select("*")
+        .eq('user2', userNow.id)
+
+
+
+
+    return { userNow, friendwithName, friendwithName2, friendspending };
 }

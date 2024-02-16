@@ -16,6 +16,12 @@
 			scrollToDiv.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
 		}, 100);
 	}
+	// const handleSignOut = async () => {
+	// 	// console.log('logout start');
+	// 	await data.supabase.auth.signOut();
+	// 	// console.log('logout done');
+	// 	window.open('/login', '_self');
+	// };
 
 	const handleSubmit = async () => {
 		loading = true;
@@ -112,7 +118,7 @@
 		<li>
 			<a href="/protected/messenger" class="flex items-center p-1 font-bold mr-3"
 				><img
-					src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/messenger-facebook-svgrepo-com.svg"
+					src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/earth-globe-connection-svgrepo-com.svg"
 					alt="Dashboard Icon"
 					class="w-8 mt-1 hover:rotate-12"
 				/>

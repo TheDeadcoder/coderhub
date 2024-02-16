@@ -4,8 +4,8 @@
 	import Themeswitcher from '$lib/themeswitcher.svelte';
 
 	export let data;
-	let { session, supabase, userNow } = data;
-	$: ({ session, supabase, userNow } = data);
+	let { session, supabase, userNow, viewUserNow } = data;
+	$: ({ session, supabase, userNow, viewUserNow } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -176,14 +176,14 @@
 				<div class="flex flex-col ml-8">
 					<div class="avatar">
 						<div class="w-48 rounded-full">
-							<img src={userNow.image} alt="User image" />
+							<img src={viewUserNow.image} alt="User image" />
 						</div>
 					</div>
 					<h1 class="font-extrabold text-3xl">
-						{userNow.name}
+						{viewUserNow.name}
 					</h1>
 					<p>
-						{userNow.about}
+						{viewUserNow.about}
 					</p>
 					<div class="card bg-transparent mt-10 font-semibold">
 						<div>
@@ -203,7 +203,7 @@
 									alt="User Image"
 									class="w-5 h-5 mr-3 hover:scale-105 hover:rotate-12"
 								/>
-								<h1>{userNow.email}</h1>
+								<h1>{viewUserNow.email}</h1>
 							</div>
 							<div class="flex flex-row mt-3">
 								<!-- svelte-ignore a11y-img-redundant-alt -->
@@ -212,7 +212,7 @@
 									alt="User Image"
 									class="w-5 h-5 mr-3 hover:scale-105 hover:rotate-12"
 								/>
-								<h1>{userNow.mobile}</h1>
+								<h1>{viewUserNow.mobile}</h1>
 							</div>
 						</div>
 					</div>
@@ -228,7 +228,7 @@
 								<h1 class="font-bold text-lg">Location</h1>
 							</div>
 							<p>
-								{userNow.address}
+								{viewUserNow.address}
 							</p>
 						</div>
 					</div>

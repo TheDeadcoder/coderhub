@@ -27,6 +27,12 @@
 			language: 'javascript'
 		});
 	}
+	const handleSignOut = async () => {
+		// console.log('logout start');
+		await data.supabase.auth.signOut();
+		// console.log('logout done');
+		window.open('/login', '_self');
+	};
 	onMount(async () => {
 		monacoEditor = await import('monaco-editor');
 		initMonaco();
@@ -82,11 +88,20 @@
 			<li>
 				<a href="/protected/messenger" class="flex items-center p-1 font-bold mr-3"
 					><img
-						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/messenger-facebook-svgrepo-com.svg"
+						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/earth-globe-connection-svgrepo-com.svg"
 						alt="Dashboard Icon"
 						class="w-8 mt-1 hover:rotate-12"
 					/>
 				</a>
+			</li>
+			<li>
+				<button class="btn" on:click={handleSignOut}>
+					<img
+						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/logout-svgrepo-com.svg"
+						alt="Dashboard Icon"
+						class="w-8 mt-1 hover:rotate-12"
+					/>
+				</button>
 			</li>
 		</ul>
 	</div>
