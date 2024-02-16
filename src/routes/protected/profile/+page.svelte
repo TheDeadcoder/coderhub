@@ -27,6 +27,16 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
+	function calculateAge(dob) {
+		const today = new Date();
+		const birthDate = new Date(dob);
+		let age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+		return age;
+	}
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -153,7 +163,68 @@
 			</div>
 		</div>
 		<div class="ml-64 w-full">
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<div class="grid grid-cols-3 gap-12">
+				<div class="flex flex-col ml-8">
+					<div class="avatar">
+						<div class="w-48 rounded-full">
+							<img src={userNow.image} alt="User image" />
+						</div>
+					</div>
+					<h1 class="font-extrabold text-3xl">
+						{userNow.name}
+					</h1>
+					<p>
+						{userNow.about}
+					</p>
+					<div class="card bg-transparent mt-10 font-semibold">
+						<div>
+							<div class="flex flex-row">
+								<!-- svelte-ignore a11y-img-redundant-alt -->
+								<img
+									src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/connect-svgrepo-com.svg"
+									alt="User Image"
+									class="w-7 h-7 mr-3 hover:scale-105 hover:rotate-12"
+								/>
+								<h1 class="font-bold text-lg">Contact Information</h1>
+							</div>
+							<div class="flex flex-row mt-4">
+								<!-- svelte-ignore a11y-img-redundant-alt -->
+								<img
+									src="https://aaitclybvvendvuswytq.supabase.co/storage/v1/object/public/BDeHR/email-blue.svg"
+									alt="User Image"
+									class="w-5 h-5 mr-3 hover:scale-105 hover:rotate-12"
+								/>
+								<h1>{userNow.email}</h1>
+							</div>
+							<div class="flex flex-row mt-3">
+								<!-- svelte-ignore a11y-img-redundant-alt -->
+								<img
+									src="https://aaitclybvvendvuswytq.supabase.co/storage/v1/object/public/BDeHR/phone.svg"
+									alt="User Image"
+									class="w-5 h-5 mr-3 hover:scale-105 hover:rotate-12"
+								/>
+								<h1>{userNow.mobile}</h1>
+							</div>
+						</div>
+					</div>
+					<div class="card bg-transparent mt-10 font-semibold">
+						<div>
+							<div class="flex flex-row">
+								<!-- svelte-ignore a11y-img-redundant-alt -->
+								<img
+									src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/location-pin-svgrepo-com.svg"
+									alt="User Image"
+									class="w-6 h-6 mr-3 hover:scale-105 hover:rotate-12"
+								/>
+								<h1 class="font-bold text-lg">Location</h1>
+							</div>
+							<p>
+								{userNow.address}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </main>
