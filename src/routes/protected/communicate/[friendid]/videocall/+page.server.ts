@@ -37,6 +37,23 @@ export const load = async ({ params, locals: { supabase, getSession } }) => {
     friendNow = userdetails1[0];
 
 
-    return { userNow, friendNow };
+    let { data: friends3, error: err3 } = await supabase
+        .from('friends')
+        .select("*")
+        .eq('user1', userNow.id)
+        .eq('user2', friendNow.id)
+
+    let { data: friends4, error: err4 } = await supabase
+        .from('friends')
+        .select("*")
+        .eq('user2', userNow.id)
+        .eq('user1', friendNow.id)
+
+    let friendship;
+
+    if (friends3[0]) friendship = friends3[0];
+    else friendship = friends4[0];
+
+    return { userNow, friendNow, friendship };
 
 }

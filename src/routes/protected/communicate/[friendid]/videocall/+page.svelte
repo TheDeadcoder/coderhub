@@ -6,8 +6,9 @@
 	const { friendid } = $page.params;
 
 	export let data;
-	let { session, supabase, userNow, friendNow } = data;
-	$: ({ session, supabase, userNow, friendNow } = data);
+	let { session, supabase, userNow, friendNow, friendship } = data;
+	$: ({ session, supabase, userNow, friendNow, friendship } = data);
+	let relationid = friendship.id;
 
 	function navigateToChats() {
 		window.open(`/protected/communicate/${friendid}/chat`, '_self');
@@ -18,6 +19,10 @@
 	function navigateToVideoCall() {
 		window.open(`/protected/communicate/${friendid}/videocall`, '_self');
 	}
+	const handleClick = () => {
+		// window.open(`/protected/call/${relationid}?uid=${relationid}`, '_self');
+		window.location.href = `/protected/call/${relationid}?uid=${relationid + 100}`;
+	};
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -126,7 +131,10 @@
 			</div>
 		</div>
 		<div class="ml-72 w-full mt-6">
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<div class="text-column">
+				<button class="btn bg-blue-300" on:click={handleClick}>Go Live</button>
+			</div>
+			<pre>{JSON.stringify(friendship, null, 2)}</pre>
 		</div>
 	</div>
 </main>
