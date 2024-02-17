@@ -2,16 +2,22 @@
 	// @ts-nocheck
 
 	import Themeswitcher from '$lib/themeswitcher.svelte';
+	import { enhance } from '$app/forms';
 
 	export let data;
-	let { session, supabase, userNow } = data;
-	$: ({ session, supabase, userNow } = data);
+	let { session, supabase, userNow, classes } = data;
+	$: ({ session, supabase, userNow, classes } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
 		console.log('logout done');
 		window.open('/login', '_self');
 	};
+	let title;
+	let syllabus;
+	let duration;
+	let start;
+	let image;
 	function navigateToHome() {
 		window.open(`/protected/home`, '_self');
 	}
@@ -26,6 +32,21 @@
 	}
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
+	}
+	let showaddmodal = false;
+	function addclassmodal() {
+		showaddmodal = true;
+	}
+
+	function closeclassmodal() {
+		showaddmodal = false;
+	}
+	function classifyClass(startDateStr) {
+		// Parse the start date string into a Date object
+		const startDate = new Date(startDateStr);
+
+		const today = new Date();
+		return startDate > today; // True for upcoming, false for running
 	}
 </script>
 
@@ -161,8 +182,138 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-64 w-full">
+		<div class="ml-72 w-full mt-8">
+			<button class="btn p-4 flex flex-row space-x-3" on:click={addclassmodal}>
+				<img
+					src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/plus-cross-svgrepo-com.svg?t=2024-02-16T12%3A28%3A07.843Z"
+					alt="Messages Icon"
+					class="w-6 h-6 mr-2"
+				/>
+				Add a New Class
+			</button>
+			<h1 class="text-2xl font-extrabold mt-6">Upcoming Classes</h1>
+			<div class="grid grid-cols-4 gap-12 mt-6">
+				{#each classes as currClass}
+					{#if classifyClass(currClass.start)}
+						<div class="flex flex-col shadow-xl items-center justify-center">
+							<img
+								src={currClass.image}
+								alt="Dashboard Icon"
+								class="w-32 mt-1 hover:rotate-12 rounded-full"
+							/>
+							<h1 class="text-xl font-bold">
+								{currClass.title}
+							</h1>
+							<p class="text-sm text-justify ml-6 mr-6">
+								{currClass.syllabus.slice(0, 100)} ...
+							</p>
+						</div>
+					{/if}
+				{/each}
+			</div>
+
+			<h1 class="text-2xl font-extrabold mt-16">Running Classes</h1>
+			<div class="grid grid-cols-4 gap-12 mt-6">
+				{#each classes as currClass}
+					{#if classifyClass(currClass.start) === false}
+						<div class="flex flex-col shadow-xl items-center justify-center">
+							<img
+								src={currClass.image}
+								alt="Dashboard Icon"
+								class="w-32 mt-1 hover:rotate-12 rounded-full"
+							/>
+							<h1 class="text-xl font-bold">
+								{currClass.title}
+							</h1>
+							<p class="text-sm text-justify ml-6 mr-6">
+								{currClass.syllabus.slice(0, 100)} ...
+							</p>
+						</div>
+					{/if}
+				{/each}
+			</div>
+
 			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<pre>{JSON.stringify(classes, null, 2)}</pre>
+			{#if showaddmodal}
+				<div
+					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"
+				>
+					<div class="bg-blue-200 p-6 rounded-lg shadow-lg max-w-md w-full m-4">
+						<div class="flex justify-between items-center mb-4">
+							<h2 class="text-2xl font-bold">Add a new class</h2>
+							<button class=" text-lg" on:click={closeclassmodal}>&times;</button>
+						</div>
+
+						<form
+							use:enhance
+							action="?/upload"
+							method="POST"
+							enctype="multipart/form-data"
+							on:submit={() => {
+								closeclassmodal();
+							}}
+						>
+							<div class="flex flex-col space-y-6">
+								<label class="label text-left mb-3">
+									<span>Class Title</span>
+
+									<input
+										class="input"
+										type="text"
+										id="title"
+										name="title"
+										bind:value={title}
+										placeholder="Enter The name of the micro course"
+									/>
+								</label>
+								<label class="label text-left">
+									<span>Syllabus</span>
+									<textarea
+										class="textarea"
+										rows="2"
+										placeholder="Topics you are gonna cover..."
+										id="syllabus"
+										name="syllabus"
+										bind:value={syllabus}
+									/>
+								</label>
+								<label class="label text-left mb-3">
+									<span>Class Duration</span>
+
+									<input
+										class="input"
+										type="number"
+										id="duration"
+										name="duration"
+										bind:value={duration}
+										placeholder="How many weeks are gonna take?"
+									/>
+								</label>
+								<label class="label text-left mb-3">
+									<span>Approx Start date</span>
+
+									<input class="input" type="date" id="start" name="start" bind:value={start} />
+								</label>
+								<label class="label text-left mb-3">
+									<span>Photo (optional)</span>
+
+									<input
+										class="file-input file-input-bordered w-full"
+										type="file"
+										id="image"
+										name="image"
+										bind:value={image}
+									/>
+								</label>
+								<button type="submit" class="btn variant-filled-primary text-xl font-semibold">
+									Submit
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </main>
