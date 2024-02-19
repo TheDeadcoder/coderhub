@@ -1,23 +1,18 @@
 import { fail, redirect } from '@sveltejs/kit'
 import { error } from '@sveltejs/kit';
-import type { Actions } from './$types';
+
 
 let userNow;
-let friendNow;
-
-export const load = async ({ params, locals: { supabase, getSession } }) => {
-    console.log(params.friendid);
+export const load = async ({ locals: { supabase, getSession } }) => {
     const session = await getSession()
 
     if (!session) {
         throw redirect(303, '/')
     }
-
-
     const {
         data: { user }
     } = await supabase.auth.getUser();
-    //console.log("Homer backend");
+    console.log("Homer backend");
     // console.log(user);
 
 
@@ -28,20 +23,13 @@ export const load = async ({ params, locals: { supabase, getSession } }) => {
     console.log(err);
     userNow = userdetails[0];
 
-    let { data: userdetails1, error: err1 } = await supabase
+    let { data: skills, error: err4 } = await supabase
+        .from('skills')
+        .select('*')
+
+
+    let { data: userdetailsall, error: err5 } = await supabase
         .from('userdetails')
-        .select("*")
-        .eq('id', params.friendid)
-    console.log(err1);
-
-    friendNow = userdetails1[0];
-
-
-
-
-
-
-
-    return { userNow, friendNow };
-
+        .select('*')
+    return { userNow, skills, userdetailsall };
 }

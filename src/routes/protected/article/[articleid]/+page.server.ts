@@ -4,6 +4,7 @@ import type { Actions } from './$types';
 
 let articleNow;
 let userNow;
+let writer;
 
 export const load = async ({ params, locals: { supabase, getSession } }) => {
     console.log(params.articleid);
@@ -33,10 +34,15 @@ export const load = async ({ params, locals: { supabase, getSession } }) => {
 
     articleNow = blog[0];
 
+    let { data: userdetails1, error: err4 } = await supabase
+        .from('userdetails')
+        .select("*")
+        .eq('id', articleNow.userid)
+    console.log(err);
+    writer = userdetails1[0];
 
 
 
-
-    return { articleNow, userNow };
+    return { articleNow, userNow, writer };
 
 }

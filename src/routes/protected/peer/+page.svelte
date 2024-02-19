@@ -1,11 +1,9 @@
 <script>
-	// @ts-nocheck
-
 	import Themeswitcher from '$lib/themeswitcher.svelte';
 
 	export let data;
-	let { session, supabase, userNow } = data;
-	$: ({ session, supabase, userNow } = data);
+	let { session, supabase, userNow, skills, userdetailsall } = data;
+	$: ({ session, supabase, userNow, skills, userdetailsall } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -24,11 +22,58 @@
 	function navigateToProjects() {
 		window.open(`/protected/projects`, '_self');
 	}
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
-	function navigateToPeer() {
-		window.open(`/protected/peer`, '_self');
+
+	let nameInp;
+	let skillInp;
+	let filterUsers = userdetailsall;
+	let filterApplied = false;
+
+	function getUser(id) {
+		for (let i = 0; i < userdetailsall.length; i++) {
+			if (userdetailsall[i].id === id) {
+				return userdetailsall[i];
+			}
+		}
+	}
+	function applyFilters() {
+		filterUsers = userdetailsall;
+		let filterUsers1;
+		let filterUsers2 = [];
+		filterUsers1 = userdetailsall.filter((product) => {
+			// If filterBrand is not null or empty, check if the product name matches it. Otherwise, return true.
+			let matchesName = !nameInp || product.name.toLowerCase().includes(nameInp.toLowerCase());
+
+			return matchesName;
+		});
+
+		let filterSkills = skills.filter((product) => {
+			// If filterBrand is not null or empty, check if the product name matches it. Otherwise, return true.
+			let matchesName = !skillInp || product.body.toLowerCase().includes(skillInp.toLowerCase());
+
+			return matchesName;
+		});
+
+		for (let i = 0; i < filterSkills.length; i++) {
+			filterUsers2 = [...filterUsers2, getUser(filterSkills[i].userid)];
+		}
+		console.log('names');
+		console.log(filterUsers1);
+		console.log('Skills');
+		console.log(filterUsers2);
+
+		filterUsers = filterUsers1 && filterUsers2;
+
+		filterApplied = true;
+	}
+	function resetView() {
+		filterApplied = false;
+		filterUsers = userdetailsall; // Clear filtered products
 	}
 </script>
 
@@ -55,7 +100,6 @@
 					Home</a
 				>
 			</li>
-
 			<li>
 				<a href="/protected/library" class="flex items-center p-1 font-bold"
 					><img
@@ -141,7 +185,7 @@
 						/>
 						Community
 					</li>
-					<li class="flex items-center p-4 hover:bg-gray-300 cursor-pointer" on:click={navigateToPeer}>
+					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToPeer}>
 						<img
 							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/search-svgrepo-com.svg"
 							alt="Query Icon"
@@ -160,7 +204,10 @@
 						/>
 						Learning
 					</li>
-					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToProjects}>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToProjects}
+					>
 						<img
 							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/code-branch-svgrepo-com.svg?t=2024-02-15T12%3A15%3A03.215Z"
 							alt="Add New Hospital Icon"
@@ -182,13 +229,61 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-64 w-full">
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+		<div class="ml-72 w-full mt-6">
+			<div class="flex flex-row space-x-3">
+				<label class="input input-bordered flex items-center gap-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="currentColor"
+						class="w-4 h-4 opacity-70"
+						><path
+							d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
+						/></svg
+					>
+					<input type="text" class="grow" placeholder="Username" bind:value={nameInp} />
+				</label>
+				<label class="input input-bordered flex items-center gap-2">
+					<img
+						src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/skill-level-intermediate-svgrepo-com.svg"
+						alt="Messages Icon"
+						class="w-4 h-4 mr-2"
+					/>
+					<input type="text" class="grow" placeholder="skill" bind:value={skillInp} />
+				</label>
+				<button class="btn btn-success" on:click={applyFilters}> Submit </button>
+			</div>
+			<div>
+				{#if filterApplied}
+					<button class="btn btn-error mb-10 mt-10" on:click={resetView}>Reset Filter </button>
+					<h1 class="text-xl font-extrabold">Filtered Result</h1>
+				{/if}
+				<div class="grid grid-cols-4 mt-6 p-6 w-full">
+					{#each filterUsers as currUser}
+						<div class="card p-6 shadow-xl flex flex-col items-center justify-center">
+							<img
+								src={currUser.image}
+								alt="Dashboard Icon"
+								class="w-32 mt-1 hover:rotate-12 rounded-full"
+							/>
+							<h1 class="font-semibold">
+								{currUser.name}
+							</h1>
+							<a href="/protected/viewonly/{currUser.id}" class="mt-4 flex flex-row space-x-4">
+								<h6 class="hover:scale-105">View Profile</h6>
+								<img
+									src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/send-svgrepo-com.svg"
+									alt="Dashboard Icon"
+									class="w-6 mt-1 rounded-full hover:rotate-6"
+								/>
+							</a>
+						</div>
+					{/each}
+				</div>
+			</div>
 		</div>
 	</div>
 </main>
-
-<h1>"home e asi"</h1>
 
 <style>
 	.appbar {

@@ -66,7 +66,32 @@ export const load = async ({ params, locals: { supabase, getSession } }) => {
         .eq('user2', userNow.id)
 
 
-    return { userNow, viewUserNow, friendspending, friend, friendspendingmy };
+
+    //suru
+    let { data: past, error: err9 } = await supabase
+        .from('past')
+        .select("*")
+        .eq('userid', viewUserNow.id)
+
+
+    let { data: present, error: err10 } = await supabase
+        .from('present')
+        .select("*")
+        .eq('userid', viewUserNow.id)
+
+
+    let { data: certificates, error: err11 } = await supabase
+        .from('certificates')
+        .select("*")
+        .eq('userid', viewUserNow.id)
+
+
+    let { data: skills, error: err12 } = await supabase
+        .from('skills')
+        .select("*")
+        .eq('userid', viewUserNow.id)
+
+    return { userNow, viewUserNow, friendspending, friend, friendspendingmy, past, present, certificates, skills };
 
 }
 

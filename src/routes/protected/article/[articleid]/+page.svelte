@@ -14,8 +14,8 @@
 	let commentBody;
 	let commentCnt = 0;
 
-	let { session, supabase, articleNow, userNow } = data;
-	$: ({ session, supabase, articleNow, userNow } = data);
+	let { session, supabase, articleNow, userNow, writer } = data;
+	$: ({ session, supabase, articleNow, userNow, writer } = data);
 
 	let values = articleNow.tags.split(',');
 
@@ -246,15 +246,15 @@
 		<p class="text-2xl font-light mt-2 ml-24 mr-24">
 			{articleNow.description}
 		</p>
-		<a href="/protected/viewonly/{userNow.id}" class="flex flex-row space-x-4 mt-4 text-left">
+		<a href="/protected/viewonly/{writer.id}" class="flex flex-row space-x-4 mt-4 text-left">
 			<div class="avatar">
 				<div class="w-10 rounded-full">
 					<!-- svelte-ignore a11y-img-redundant-alt -->
-					<img src={userNow.image} alt="user image" />
+					<img src={writer.image} alt="user image" />
 				</div>
 			</div>
 			<h3 class="font-semibold text-xl">
-				{userNow.name}
+				{writer.name}
 			</h3>
 		</a>
 		<div class="flex flex-row mt-7 space-x-12 text-left">

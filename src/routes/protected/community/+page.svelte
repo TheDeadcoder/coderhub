@@ -27,9 +27,13 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 	function openAddForm() {
 		window.open(`/protected/newpost`, '_self');
 	}
+
 	// const handleSignOut = async () => {
 	// 	// console.log('logout start');
 	// 	await data.supabase.auth.signOut();
@@ -163,6 +167,14 @@
 							class="w-6 h-6 mr-2"
 						/>
 						Community
+					</li>
+					<li class="flex items-center p-4 hover:bg-gray-300 cursor-pointer" on:click={navigateToPeer}>
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/search-svgrepo-com.svg"
+							alt="Query Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Find a Peer
 					</li>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"

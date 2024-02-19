@@ -232,14 +232,20 @@
 						<label class="label text-left mb-3">
 							<span>Resource Content</span>
 
-							<input class="input" type="file" id="content" name="content" bind:value={content} />
+							<input
+								class="file-input file-input-bordered w-full"
+								type="file"
+								id="content"
+								name="content"
+								bind:value={content}
+							/>
 						</label>
 
 						<label class="label text-left mb-3">
 							<span>Cover Photo (optional)</span>
 
 							<input
-								class="input"
+								class="file-input file-input-bordered w-full"
 								type="file"
 								id="coverimg"
 								name="coverimg"

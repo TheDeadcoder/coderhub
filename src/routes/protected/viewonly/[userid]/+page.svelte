@@ -5,14 +5,41 @@
 	import { onMount } from 'svelte';
 
 	export let data;
-	let { session, supabase, userNow, viewUserNow, friendspending, friend, friendspendingmy } = data;
-	$: ({ session, supabase, userNow, viewUserNow, friendspending, friend, friendspendingmy } = data);
+	let {
+		session,
+		supabase,
+		userNow,
+		viewUserNow,
+		friendspending,
+		friend,
+		friendspendingmy,
+		past,
+		present,
+		certificates,
+		skills
+	} = data;
+	$: ({
+		session,
+		supabase,
+		userNow,
+		viewUserNow,
+		friendspending,
+		friend,
+		friendspendingmy,
+		past,
+		present,
+		certificates,
+		skills
+	} = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
 		console.log('logout done');
 		window.open('/login', '_self');
 	};
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 	function navigateToHome() {
 		window.open(`/protected/home`, '_self');
 	}
@@ -162,6 +189,17 @@
 					</li>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToPeer}
+					>
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/search-svgrepo-com.svg"
+							alt="Query Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Find a Peer
+					</li>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
 						on:click={navigateToLearning}
 					>
 						<img
@@ -197,7 +235,7 @@
 			</div>
 		</div>
 		<div class="ml-64 w-full mt-6">
-			<div class="grid grid-cols-3 gap-12">
+			<div class="flex flex-row space-x-24">
 				<div class="flex flex-col ml-8">
 					<div class="avatar">
 						<div class="w-48 rounded-full">
@@ -276,6 +314,131 @@
 							</p>
 						</div>
 					</div>
+					<div class="flex flex-row mt-20">
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<img
+							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/graduation-cap-svgrepo-com.svg"
+							alt="User Image"
+							class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+						/>
+						<h1 class="font-bold text-lg mb-4">Academic/ Work Experiences</h1>
+					</div>
+
+					{#each past as currPast}
+						<div class="flex flex-row space-x-4 space-y-3">
+							<!-- svelte-ignore a11y-img-redundant-alt -->
+							<img
+								src={currPast.image}
+								alt="User Image"
+								class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+							/>
+							<div>
+								<h1 class="font-bold">
+									{currPast.institute}
+								</h1>
+								<h4 class="font-semibold">
+									{currPast.position}
+								</h4>
+								<p>
+									{currPast.from}-{currPast.to}
+								</p>
+							</div>
+						</div>
+					{/each}
+
+					<h1 class="font-extrabold text-xl mt-10">Current Affliations</h1>
+					{#each present as currPresent}
+						<div class="flex flex-row space-x-4 space-y-3">
+							<!-- svelte-ignore a11y-img-redundant-alt -->
+							<img
+								src={currPresent.image}
+								alt="User Image"
+								class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+							/>
+							<div>
+								<h1 class="font-bold">
+									{currPresent.institute}
+								</h1>
+								<h4 class="font-semibold">
+									{currPresent.position}
+								</h4>
+								<p>
+									{currPresent.from}-Now
+								</p>
+							</div>
+						</div>
+					{/each}
+				</div>
+
+				<div class="flex flex-col ml-8 w-2/3 mt-28">
+					<div class="flex flex-row mt-20">
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/certificate-diploma-svgrepo-com.svg"
+							alt="Certificate Image"
+							class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+						/>
+						<h1 class="font-extrabold text-xl mb-4">Achievements & Certifications</h1>
+					</div>
+
+					{#each certificates as currSkill}
+						<div class="flex flex-row space-x-4 space-y-3">
+							<!-- svelte-ignore a11y-img-redundant-alt -->
+							<img
+								src={currSkill.image}
+								alt="Certificate Image"
+								class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+							/>
+							<div>
+								<h1 class="font-bold">
+									{currSkill.name}
+								</h1>
+								<h4 class="font-semibold">
+									Institute: {currSkill.issuer}
+								</h4>
+								<p>
+									Received: {currSkill.received}
+								</p>
+								<p>
+									Credential: {currSkill.link}
+								</p>
+							</div>
+						</div>
+					{/each}
+
+					<div class="flex flex-row mt-20">
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/expert-route-dificulty-svgrepo-com.svg"
+							alt="Certificate Image"
+							class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+						/>
+						<h1 class="font-extrabold text-xl mb-4">Skills</h1>
+					</div>
+					<div class="mt-4 flex flex-row space-x-3 text-sm">
+						{#each skills as value}
+							<div class="chipi">
+								<span>
+									<img
+										src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/pin-svgrepo-com.svg"
+										alt="User "
+										class="w-4 h-4 mr-2 hover:scale-105 hover:rotate-12"
+									/>
+								</span>
+								<span>{value.body}</span>
+							</div>
+						{/each}
+					</div>
+
+					<div class="flex flex-row mt-20">
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/roadmap-svgrepo-com.svg"
+							alt="Certificate Image"
+							class="w-8 h-8 mr-3 hover:scale-105 hover:rotate-12"
+						/>
+						<h1 class="font-extrabold text-xl mb-4">Projects</h1>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -314,6 +477,15 @@
 	}
 
 	.logo-container {
+		display: flex;
+		align-items: center;
+	}
+	.chipi {
+		background-color: #c1d4e3;
+
+		padding: 0.5rem;
+		margin-right: 0.5rem;
+		border-radius: 0.25rem;
 		display: flex;
 		align-items: center;
 	}

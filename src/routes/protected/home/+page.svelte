@@ -24,6 +24,9 @@
 	function navigateToProjects() {
 		window.open(`/protected/projects`, '_self');
 	}
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
@@ -136,6 +139,17 @@
 					</li>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToPeer}
+					>
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/search-svgrepo-com.svg"
+							alt="Query Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Find a Peer
+					</li>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
 						on:click={navigateToLearning}
 					>
 						<img
@@ -170,7 +184,7 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-64 w-full">
+		<div class="ml-72 mt-6 w-full">
 			<pre>{JSON.stringify(userNow, null, 2)}</pre>
 		</div>
 	</div>

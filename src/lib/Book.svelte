@@ -18,13 +18,13 @@
 
 <div class="w-[250px] min-w-[200px]">
 	<button on:click={() => sendDataToParent(book.content)}>
-		<div class="grid grid-rows-[300px_75px] border-1">
+		<div class="grid grid-rows-[300px_75px] border-1 shadow-md hover:shadow-2xl">
 			<div class="w-100%">
 				<img style="width: 100%; height : 100%;" src={book.coverimg} alt="" />
 			</div>
 			<div>
-				<h1>{book.title}</h1>
-				<h2>{book.author}</h2>
+				<h1 class="text-xl font-bold">{book.title}</h1>
+				<h2 class="text-base font-semibold">{book.author}</h2>
 			</div>
 		</div>
 	</button>
