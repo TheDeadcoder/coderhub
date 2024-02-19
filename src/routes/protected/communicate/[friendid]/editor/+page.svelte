@@ -57,7 +57,16 @@
 
 		<ul class="links">
 			<Themeswitcher />
-
+			<li>
+				<a href="/protected/home" class="flex items-center p-1 font-bold"
+					><img
+						src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/home-house-svgrepo-com.svg"
+						alt="Dashboard Icon"
+						class="h-5 mr-1 hover:rotate-12"
+					/>
+					Home</a
+				>
+			</li>
 			<li>
 				<a href="/protected/library" class="flex items-center p-1 font-bold"
 					><img
