@@ -2,30 +2,25 @@
 	// @ts-nocheck
 	import { makeDiff, cleanupSemantic } from '@sanity/diff-match-patch';
 	import { enhance } from '$app/forms';
-	import Themeswitcher from '$lib/themeswitcher.svelte';
+
 	import JSZip from 'jszip';
 	import DirectoryStructure from '$lib/DirectoryStructure.svelte';
 
+	import Themeswitcher from '$lib/themeswitcher.svelte';
+	import { onMount } from 'svelte';
+
 	export let data;
-	let title;
-	let description;
-	let showaddmodal = false;
-	function addclassmodal() {
-		showaddmodal = true;
-	}
-
-	function closeclassmodal() {
-		showaddmodal = false;
-	}
-
-	let { session, supabase, userNow, projects } = data;
-	$: ({ session, supabase, userNow, projects } = data);
+	let { session, supabase, userNow, projNow, commits } = data;
+	$: ({ session, supabase, userNow, projNow, commits } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
 		console.log('logout done');
 		window.open('/login', '_self');
 	};
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 	function navigateToHome() {
 		window.open(`/protected/home`, '_self');
 	}
@@ -41,8 +36,18 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
-	function navigateToPeer() {
-		window.open(`/protected/peer`, '_self');
+	function navigateToFriend() {
+		window.open(`/protected/communicate/${viewUserNow.id}/chat`, '_self');
+	}
+	function calculateAge(dob) {
+		const today = new Date();
+		const birthDate = new Date(dob);
+		let age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+		return age;
 	}
 
 	function prettyHTML(diffs) {
@@ -127,13 +132,20 @@
 	}
 
 	async function realUpload() {
+		let { data: commitcount, error } = await supabase
+			.from('project')
+			.select('commitcount')
+			.eq('id', projNow.id);
+
+		let newCommit = commitcount + 1;
+
 		const input = document.getElementById('uploadForm').querySelector('input[type=file]');
 		const files = input.files;
 
 		// console.log(files)
 		const firstFileRelativePath = files[0].webkitRelativePath;
 		const pathComponents = firstFileRelativePath.split('/');
-		const rootFolderName = pathComponents[0];
+		const rootFolderName = pathComponents[0] + newCommit;
 
 		console.log(rootFolderName);
 
@@ -153,6 +165,17 @@
 				cacheControl: '3600',
 				upsert: false
 			});
+
+		const { data: link } = await supabase.storage.from('test').getPublicUrl(rootFolderName);
+
+		const { data: dtt, error: err6 } = await supabase
+			.from('newProj')
+			.update({ commitcount: newCommit })
+			.eq('id', projNow.id);
+
+		const { data: dttttt, error: err7 } = await supabase
+			.from('commits')
+			.insert([{ projectid: projNow.id, title: rootFolderName, url: link.publicUrl }]);
 
 		console.log(res);
 		console.log(err);
@@ -288,6 +311,8 @@
 	// 	URL.revokeObjectURL(url);
 	// 	link.remove();
 	// }
+
+	onMount(async () => {});
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -303,7 +328,16 @@
 
 		<ul class="links">
 			<Themeswitcher />
-
+			<li>
+				<a href="/protected/home" class="flex items-center p-1 font-bold"
+					><img
+						src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/home-house-svgrepo-com.svg"
+						alt="Dashboard Icon"
+						class="h-5 mr-1 hover:rotate-12"
+					/>
+					Home</a
+				>
+			</li>
 			<li>
 				<a href="/protected/library" class="flex items-center p-1 font-bold"
 					><img
@@ -357,6 +391,7 @@
 		</ul>
 	</div>
 </nav>
+
 <main class=" min-h-screen mt-28">
 	<div class="flex">
 		<div class="fixed">
@@ -433,28 +468,7 @@
 				</ul>
 			</div>
 		</div>
-
-		<div class="ml-72 w-full mt-8">
-			<button class="mt-6 btn btn-success" on:click={addclassmodal}> + Add a New Project </button>
-			<div class="grid grid-cols-4 gap-12 mt-6">
-				{#each projects as currProject}
-					<div class="card w-96 bg-base-100 shadow-xl">
-						<figure>
-							<img
-								src="https://img.freepik.com/free-vector/gradient-technology-devops-illustration_23-2149358047.jpg?w=1380&t=st=1708359467~exp=1708360067~hmac=42936fb6f4d8b29bf480839f6124a969a5c191e1ff647be7d70f8ad97b6136c6"
-								alt="Shoes"
-							/>
-						</figure>
-						<div class="card-body">
-							<h2 class="card-title">{currProject.title}</h2>
-							<p class="text-sm">{currProject.description}</p>
-							<a href="/protected/project/{currProject.id}" class="btn btn-primary mt-3">
-								Go Inside
-							</a>
-						</div>
-					</div>
-				{/each}
-			</div>
+		<div class="ml-72 mt-6 w-full">
 			<form id="uploadForm" method="post" enctype="multipart/form-data">
 				<input type="file" name="files[]" webkitdirectory multiple /><br />
 			</form>
@@ -465,77 +479,22 @@
 						realUpload();
 					}}>Real Upload</button
 				>
-				<button
+				<!-- <button
 					class="btn btn-outline mt-5"
 					on:click={() => {
 						realDownload();
 					}}
 					>Real Download
-				</button>
+				</button> -->
 			</div>
-			<DirectoryStructure directories={tree1} title="Tree1" />
-			<DirectoryStructure directories={tree2} title="Tree2" />
 			<div>
-				{#each diffResults as x, index}
-					<div class="card mt-5 shadow p-5 hover:shadow-xl">
-						<p class="card-title">FileName: {x['name']}</p>
-						<div class="card-body">
-							<p>{@html x['content']}</p>
-						</div>
+				{#each commits as commit}
+					<div class="text-xl font-bold mt-6">
+						{commit.title}
 					</div>
+					<a href={commit.url} class="text-xl font-semibold"> Commit Link </a>
 				{/each}
 			</div>
-			{#if showaddmodal}
-				<div
-					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"
-				>
-					<div class="bg-blue-200 p-6 rounded-lg shadow-lg max-w-md w-full m-4">
-						<div class="flex justify-between items-center mb-4">
-							<h2 class="text-2xl font-bold">Add a new class</h2>
-							<button class=" text-lg" on:click={closeclassmodal}>&times;</button>
-						</div>
-
-						<form
-							use:enhance
-							action="?/addProj"
-							method="POST"
-							on:submit={() => {
-								closeclassmodal();
-							}}
-						>
-							<div class="flex flex-col space-y-6">
-								<label class="label text-left mb-3">
-									<span>Project Title</span>
-
-									<input
-										class="input"
-										type="text"
-										id="title"
-										name="title"
-										bind:value={title}
-										placeholder="Enter The name of the micro course"
-									/>
-								</label>
-								<label class="label text-left">
-									<span>Description</span>
-									<textarea
-										class="textarea"
-										rows="2"
-										placeholder="Enter thr description..."
-										id="description"
-										name="description"
-										bind:value={description}
-									/>
-								</label>
-
-								<button type="submit" class="btn variant-filled-primary text-xl font-semibold">
-									Submit
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			{/if}
 		</div>
 	</div>
 </main>

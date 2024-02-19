@@ -39,6 +39,7 @@
 	function navigateToPeer() {
 		window.open(`/protected/peer`, '_self');
 	}
+
 	let showaddmodal = false;
 	function addclassmodal() {
 		showaddmodal = true;
