@@ -37,12 +37,14 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sanity/diff-match-patch": "^3.1.1",
 		"@supabase/auth-helpers-sveltekit": "^0.12.0",
 		"@supabase/supabase-js": "^2.39.6",
-		"gpt3-tokenizer": "^1.1.5",
-		"monaco-editor": "^0.46.0",
 		"agora-rtc-sdk-ng": "^4.20.0",
 		"agora-token": "^2.0.3",
+		"gpt3-tokenizer": "^1.1.5",
+		"jszip": "^3.10.1",
+		"monaco-editor": "^0.46.0",
 		"openai": "^4.26.0",
 		"quill": "1.3.6",
 		"sse.js": "^2.2.0"
