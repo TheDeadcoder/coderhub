@@ -27,8 +27,33 @@ export const load = async ({ locals: { supabase, getSession } }) => {
         .from('classes')
         .select("*")
 
+    const classwithownername = await Promise.all(classes.map(async (classitem) => {
+        let { data: username, error: pendingError } = await supabase
+            .from('userdetails')
+            .select("name")
+            .eq('id', classitem.ownerid);
+
+        if (pendingError) {
+            console.error(pendingError.message);
+        }
+
+        let name = username[0].name;
+        return {
+            ...classitem, name
+        };
+    }));
+
+    let { data: studclass, error: err3 } = await supabase
+        .from('studclass')
+        .select("*")
+        .eq('sid', userNow.id)
+
     if (err2) console.log(err2)
-    return { userNow, classes };
+    return { userNow, classes: classwithownername, studclass };
+
+
+
+
 }
 
 function formatDate(dateString) {

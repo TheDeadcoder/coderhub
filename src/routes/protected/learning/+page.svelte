@@ -5,8 +5,8 @@
 	import { enhance } from '$app/forms';
 
 	export let data;
-	let { session, supabase, userNow, classes } = data;
-	$: ({ session, supabase, userNow, classes } = data);
+	let { session, supabase, userNow, classes, studclass } = data;
+	$: ({ session, supabase, userNow, classes, studclass } = data);
 	const handleSignOut = async () => {
 		console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -47,6 +47,14 @@
 
 		const today = new Date();
 		return startDate > today; // True for upcoming, false for running
+	}
+	function isEntryExist(sid, cid) {
+		for (let i = 0; i < studclass.length; i++) {
+			if (studclass[i].sid === sid && studclass[i].cid === cid) {
+				return true;
+			}
+		}
+		return false;
 	}
 </script>
 
@@ -204,9 +212,19 @@
 							<h1 class="text-xl font-bold">
 								{currClass.title}
 							</h1>
-							<p class="text-sm text-justify ml-6 mr-6">
+							<h1 class="text-base font-semibold">
+								{currClass.name}
+							</h1>
+							<p class="text-sm text-justify ml-6 mr-6 mb-4">
 								{currClass.syllabus.slice(0, 100)} ...
 							</p>
+							{#if currClass.ownerid === userNow.id}
+								<button class="btn btn-error mb-4"> Terminate Class </button>
+							{:else if isEntryExist(currClass.id)}
+								<button class="btn btn-error mb-4" disabled={true}> Already Enrolled </button>
+							{:else}
+								<button class="btn btn-success mb-4"> Enroll to Class </button>
+							{/if}
 						</div>
 					{/if}
 				{/each}
@@ -225,9 +243,51 @@
 							<h1 class="text-xl font-bold">
 								{currClass.title}
 							</h1>
-							<p class="text-sm text-justify ml-6 mr-6">
+							<h1 class="text-base font-semibold">
+								{currClass.name}
+							</h1>
+							<p class="text-sm text-justify ml-6 mr-6 mb-4">
 								{currClass.syllabus.slice(0, 100)} ...
 							</p>
+							{#if currClass.ownerid === userNow.id}
+								<div class="flex flex-row space-x-4 items-center justify-center mb-5">
+									<button class="btn btn-success"> Go To Class </button>
+									<button class="btn btn-error"> Terminate Class </button>
+								</div>
+							{:else if isEntryExist(userNow.id, currClass.id)}
+								<button class="btn btn-success"> Go To Class </button>
+								<button class="btn btn-error"> Leave Class </button>
+							{:else}
+								<button class="btn btn-error"> Enroll Into Class </button>
+							{/if}
+						</div>
+					{/if}
+				{/each}
+			</div>
+
+			<h1 class="text-2xl font-extrabold mt-16">My Classes</h1>
+			<div class="grid grid-cols-4 gap-12 mt-6">
+				{#each classes as currClass}
+					{#if currClass.ownerid === userNow.id}
+						<div class="flex flex-col shadow-xl items-center justify-center">
+							<img
+								src={currClass.image}
+								alt="Dashboard Icon"
+								class="w-32 mt-1 hover:rotate-12 rounded-full"
+							/>
+							<h1 class="text-xl font-bold">
+								{currClass.title}
+							</h1>
+							<h1 class="text-base font-semibold">
+								{currClass.name}
+							</h1>
+							<p class="text-sm text-justify ml-6 mr-6 mb-4">
+								{currClass.syllabus.slice(0, 100)} ...
+							</p>
+							<div class="flex flex-row space-x-4 items-center justify-center mb-5">
+								<button class="btn btn-success"> Go To Class </button>
+								<button class="btn btn-error"> Terminate Class </button>
+							</div>
 						</div>
 					{/if}
 				{/each}
@@ -235,6 +295,7 @@
 
 			<pre>{JSON.stringify(userNow, null, 2)}</pre>
 			<pre>{JSON.stringify(classes, null, 2)}</pre>
+			<pre>{JSON.stringify(studclass, null, 2)}</pre>
 			{#if showaddmodal}
 				<div
 					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"
