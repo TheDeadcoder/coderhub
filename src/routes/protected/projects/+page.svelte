@@ -30,6 +30,9 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
+	function navigateToPeer() {
+		window.open(`/protected/peer`, '_self');
+	}
 
 	function prettyHTML(diffs) {
 		var html = [];
@@ -59,7 +62,6 @@
 		}
 		return html.join('');
 	}
-
 
 	//New Stuff
 	let diffResults = [];
@@ -221,8 +223,8 @@
 			diffResults = [...diffResults, tmp];
 		}
 
-		console.log(tree1)
-		console.log(tree2)
+		console.log(tree1);
+		console.log(tree2);
 	}
 
 	function printDirectoryTree(files, indent, id) {
@@ -378,6 +380,17 @@
 					</li>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToPeer}
+					>
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/search-svgrepo-com.svg"
+							alt="Query Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Find a Peer
+					</li>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
 						on:click={navigateToLearning}
 					>
 						<img
@@ -412,15 +425,20 @@
 
 		<div class="ml-72 w-full mt-8">
 			<div class="card w-96 bg-base-100 shadow-xl">
-				<figure><img src="https://img.freepik.com/free-vector/gradient-technology-devops-illustration_23-2149358047.jpg?w=1380&t=st=1708359467~exp=1708360067~hmac=42936fb6f4d8b29bf480839f6124a969a5c191e1ff647be7d70f8ad97b6136c6" alt="Shoes" /></figure>
+				<figure>
+					<img
+						src="https://img.freepik.com/free-vector/gradient-technology-devops-illustration_23-2149358047.jpg?w=1380&t=st=1708359467~exp=1708360067~hmac=42936fb6f4d8b29bf480839f6124a969a5c191e1ff647be7d70f8ad97b6136c6"
+						alt="Shoes"
+					/>
+				</figure>
 				<div class="card-body">
-				  <h2 class="card-title">Project Title</h2>
-				  <p>Project descriptions</p>
-				  <div class="card-actions justify-end">
-					<button class="btn btn-primary">Go Inside</button>
-				  </div>
+					<h2 class="card-title">Project Title</h2>
+					<p>Project descriptions</p>
+					<div class="card-actions justify-end">
+						<button class="btn btn-primary">Go Inside</button>
+					</div>
 				</div>
-			  </div>
+			</div>
 			<form id="uploadForm" method="post" enctype="multipart/form-data">
 				<input type="file" name="files[]" webkitdirectory multiple /><br />
 			</form>
@@ -439,8 +457,8 @@
 					>Real Download
 				</button>
 			</div>
-			<DirectoryStructure directories={tree1} title="Tree1"/>
-			<DirectoryStructure directories={tree2} title="Tree2"/>
+			<DirectoryStructure directories={tree1} title="Tree1" />
+			<DirectoryStructure directories={tree2} title="Tree2" />
 			<div>
 				{#each diffResults as x, index}
 					<div class="card mt-5 shadow p-5 hover:shadow-xl">
