@@ -119,41 +119,42 @@ export const actions = {
 
         throw redirect(303, '/protected/learning');
     },
-    // deleteRequest: async ({ url, locals: { supabase, getSession } }) => {
-    //     const requestid = url.searchParams.get("id")
-    //     console.log("ami request delete korte chai ", requestid);
+    deleteTodo: async ({ url, locals: { supabase, getSession } }) => {
+        const todoid = url.searchParams.get("id")
+        console.log("ami todo delete korte chai ", todoid);
 
-    //     if (!requestid) {
-    //         return fail(400, { message: "Invalid request" })
-    //     }
+        if (!todoid) {
+            return fail(400, { message: "Invalid request" })
+        }
 
-    //     const { error: err } = await supabase
-    //         .from('studclass')
-    //         .delete()
-    //         .eq("id", requestid)
+        const { error: err } = await supabase
+            .from('todo')
+            .delete()
+            .eq("id", todoid)
 
-    //     if (err) console.log(err)
-    //     else throw redirect(303, '/trainerverified/classes');
+        if (err) console.log(err)
+        else throw redirect(303, '/protected/planner');
 
-    // },
-    // ApproveRequest: async ({ url, locals: { supabase, getSession } }) => {
-    //     const requestid = url.searchParams.get("id")
-    //     console.log("ami request approve korte chai ", requestid);
+    },
+    enroll: async ({ url, locals: { supabase, getSession } }) => {
+        const cid = url.searchParams.get("id")
+        // console.log("ami todo Update korte chai ", todoid);
 
-    //     if (!requestid) {
-    //         return fail(400, { message: "Invalid request" })
-    //     }
-
-
-    //     const { data, error: err } = await supabase
-    //         .from('studclass')
-    //         .update({ joined: true })
-    //         .eq("id", requestid)
+        if (!cid) {
+            return fail(400, { message: "Invalid request" })
+        }
 
 
-    //     if (err) return fail(400, { message: "Invalid request" })
-    //     else throw redirect(303, '/trainerverified/classes');
+        const { data: dtt, error: err1 } = await supabase
+            .from('studclass')
+            .insert([
+                { sid: userNow.id, cid: cid },
+            ])
 
-    // },
+
+        if (err1) return fail(400, { message: "Invalid request" })
+        else throw redirect(303, '/protected/learning');
+
+    },
 
 }

@@ -4,23 +4,30 @@
 	import { onMount } from 'svelte';
 	// import * as monaco from 'monaco-editor';
 	import { page } from '$app/stores';
-	const { friendid } = $page.params;
+	const { classid } = $page.params;
 
 	export let data;
 	let title;
 
-	let { session, supabase, userNow, friendNow, allcodes } = data;
-	$: ({ session, supabase, userNow, friendNow, allcodes } = data);
+	let { session, supabase, classNow, studclass, userNow, allcodes } = data;
+	$: ({ session, supabase, classNow, studclass, userNow, allcodes } = data);
 
-	function navigateToChats() {
-		window.open(`/protected/communicate/${friendid}/chat`, '_self');
+	function navigateToChat() {
+		window.open(`/protected/class/${classid}/chat`, '_self');
 	}
-	function navigateToSharedEditor() {
-		window.open(`/protected/communicate/${friendid}/editor`, '_self');
+	function navigateToEditors() {
+		window.open(`/protected/class/${classid}/editor`, '_self');
 	}
-	function navigateToVideoCall() {
-		window.open(`/protected/communicate/${friendid}/videocall`, '_self');
+	function navigateToNotes() {
+		window.open(`/protected/class/${classid}/notes`, '_self');
 	}
+	function navigateToLive() {
+		window.open(`/protected/class/${classid}/live`, '_self');
+	}
+	function navigateBack() {
+		window.open(`/protected/learning`, '_self');
+	}
+
 	let showaddmodal = false;
 	function addclassmodal() {
 		showaddmodal = true;
@@ -31,7 +38,7 @@
 	}
 
 	function gotoEditor(id) {
-		window.open(`/protected/communicate/${friendid}/editorspec/${id}`, '_self');
+		window.open(`/protected/class/${classid}/editorspec/${id}`, '_self');
 	}
 
 	const handleSignOut = async () => {
@@ -131,57 +138,87 @@
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore missing-declaration -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					<div class="flex flex-row space-x-1 mb-12">
+						<img
+							src={classNow.image}
+							class="transform transition w-16 duration-300 hover:scale-105"
+							alt="title"
+						/>
+						<h1 class="font-extrabold text-2xl">
+							{classNow.title}
+						</h1>
+					</div>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToChats}
+						on:click={navigateToChat}
 					>
 						<img
-							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/chat-svgrepo-com%20(1).svg"
+							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/chat-svgrepo-com%20(1)%20(1).svg"
 							alt="Dashboard Icon"
 							class="w-6 h-6 mr-2"
 						/>
-						Chats
+						Chat
 					</li>
-					<li
-						class="flex items-center p-4 bg-red-400 cursor-default"
-						on:click={navigateToSharedEditor}
-					>
+					<li class="flex items-center p-4 bg-red-400 cursor-default" on:click={navigateToEditors}>
 						<img
 							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/code-svgrepo-com%20(1).svg"
 							alt="Query Icon"
 							class="w-6 h-6 mr-2"
 						/>
-						Editor
+						Editors
 					</li>
 					<li
 						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
-						on:click={navigateToVideoCall}
+						on:click={navigateToNotes}
 					>
 						<img
-							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/video-call-svgrepo-com.svg?t=2024-02-15T21%3A29%3A48.870Z"
+							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/note-svgrepo-com.svg"
 							alt="Add New Hospital Icon"
 							class="w-6 h-6 mr-2"
 						/>
-						Video Call
+						Notes
+					</li>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateToLive}
+					>
+						<img
+							src="https://dxpcgmtdvyvcxbaffqmt.supabase.co/storage/v1/object/public/demo/conference-live-video-svgrepo-com.svg"
+							alt="Add New Hospital Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Go Live
+					</li>
+					<li
+						class="flex items-center p-4 hover:bg-gray-300 cursor-pointer"
+						on:click={navigateBack}
+					>
+						<img
+							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/back-svgrepo-com%20(1).svg"
+							alt="Messages Icon"
+							class="w-6 h-6 mr-2"
+						/>
+						Go Back
 					</li>
 				</ul>
 			</div>
 		</div>
 		<div class="ml-72 w-full mt-6">
-			<button class="btn p-3" on:click={addclassmodal}>
-				<div class="flex flex-row space-x-3">
-					<img
-						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/plus-cross-svgrepo-com.svg?t=2024-02-16T12%3A28%3A07.843Z"
-						alt="Add New Hospital Icon"
-						class="w-6 h-6 mr-2"
-					/>
+			{#if classNow.ownerid === userNow.id}
+				<button class="btn p-3" on:click={addclassmodal}>
+					<div class="flex flex-row space-x-3">
+						<img
+							src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/plus-cross-svgrepo-com.svg?t=2024-02-16T12%3A28%3A07.843Z"
+							alt="Add New Hospital Icon"
+							class="w-6 h-6 mr-2"
+						/>
 
-					<h4>Start a New code Editor</h4>
-				</div>
-			</button>
-			<h1 class="mt-4 font-extrabold text-xl">
-				Shared Codefiles between you and {friendNow.name}
-			</h1>
+						<h4>Start a New code Editor</h4>
+					</div>
+				</button>
+			{/if}
+
+			<h1 class="mt-4 font-extrabold text-2xl">Code Files of class</h1>
 			<div class="grid grid-cols-4 gap-12 mt-4">
 				{#if allcodes}
 					{#each allcodes as currCode}
@@ -197,14 +234,6 @@
 							<h2 class="text-2xl font-bold">
 								{currCode.title}
 							</h2>
-
-							{#if currCode.ownerid === userNow.id}
-								<h3 class="font-semibold">Owner: You</h3>
-							{:else}
-								<h3 class="font-semibold">
-									Owner: {friendNow.name}
-								</h3>
-							{/if}
 
 							<h4 class="font-semibold">Go to Editor</h4>
 						</button>

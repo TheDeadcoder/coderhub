@@ -33,6 +33,9 @@
 	function navigateToProfile() {
 		window.open(`/protected/profile`, '_self');
 	}
+	function navigateToClass(cid) {
+		window.open(`/protected/class/${cid}/chat`, '_self');
+	}
 	let showaddmodal = false;
 	function addclassmodal() {
 		showaddmodal = true;
@@ -48,9 +51,9 @@
 		const today = new Date();
 		return startDate > today; // True for upcoming, false for running
 	}
-	function isEntryExist(sid, cid) {
+	function isEntryExist(cid) {
 		for (let i = 0; i < studclass.length; i++) {
-			if (studclass[i].sid === sid && studclass[i].cid === cid) {
+			if (studclass[i].sid === userNow.id && studclass[i].cid === cid) {
 				return true;
 			}
 		}
@@ -232,7 +235,9 @@
 							{:else if isEntryExist(currClass.id)}
 								<button class="btn btn-error mb-4" disabled={true}> Already Enrolled </button>
 							{:else}
-								<button class="btn btn-success mb-4"> Enroll to Class </button>
+								<form action="?/enroll&id={currClass.id}" method="POST">
+									<button type="submit" class="btn btn-success mb-4 p-3"> Enroll to Class </button>
+								</form>
 							{/if}
 						</div>
 					{/if}
@@ -260,14 +265,22 @@
 							</p>
 							{#if currClass.ownerid === userNow.id}
 								<div class="flex flex-row space-x-4 items-center justify-center mb-5">
-									<button class="btn btn-success"> Go To Class </button>
+									<button class="btn btn-success" on:click={() => navigateToClass(currClass.id)}>
+										Go To Class
+									</button>
 									<button class="btn btn-error"> Terminate Class </button>
 								</div>
-							{:else if isEntryExist(userNow.id, currClass.id)}
-								<button class="btn btn-success"> Go To Class </button>
-								<button class="btn btn-error"> Leave Class </button>
+							{:else if isEntryExist(currClass.id)}
+								<div class="flex flex-row space-x-4 items-center justify-center mb-5">
+									<button class="btn btn-success" on:click={() => navigateToClass(currClass.id)}>
+										Go To Class
+									</button>
+									<button class="btn btn-error"> Leave Class </button>
+								</div>
 							{:else}
-								<button class="btn btn-error"> Enroll Into Class </button>
+								<form action="?/enroll&id={currClass.id}" method="POST">
+									<button type="submit" class="btn btn-success mb-4 p-3"> Enroll to Class </button>
+								</form>
 							{/if}
 						</div>
 					{/if}
@@ -294,7 +307,9 @@
 								{currClass.syllabus.slice(0, 100)} ...
 							</p>
 							<div class="flex flex-row space-x-4 items-center justify-center mb-5">
-								<button class="btn btn-success"> Go To Class </button>
+								<button class="btn btn-success" on:click={() => navigateToClass(currClass.id)}>
+									Go To Class
+								</button>
 								<button class="btn btn-error"> Terminate Class </button>
 							</div>
 						</div>

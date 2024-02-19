@@ -2,17 +2,16 @@ import { fail, redirect } from '@sveltejs/kit'
 import { error } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
+let classNow;
 let userNow;
-let friendNow;
 
 export const load = async ({ params, locals: { supabase, getSession } }) => {
-    console.log(params.friendid);
+    console.log(params.classid);
     const session = await getSession()
 
     if (!session) {
         throw redirect(303, '/')
     }
-
 
     const {
         data: { user }
@@ -28,17 +27,19 @@ export const load = async ({ params, locals: { supabase, getSession } }) => {
     console.log(err);
     userNow = userdetails[0];
 
-    let { data: userdetails1, error: err1 } = await supabase
-        .from('userdetails')
+
+    let { data: classes, error: err1 } = await supabase
+        .from('classes')
         .select("*")
-        .eq('id', params.friendid)
-    console.log(err1);
-
-    friendNow = userdetails1[0];
+        .eq('id', params.classid)
+    classNow = classes[0];
 
 
+    let { data: studclass, error: err3 } = await supabase
+        .from('studclass')
+        .select("*")
+        .eq('cid', classNow.id)
 
-
-    return { userNow, friendNow };
+    return { classNow, studclass, userNow };
 
 }
