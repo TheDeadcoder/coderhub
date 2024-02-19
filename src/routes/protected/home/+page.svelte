@@ -185,7 +185,7 @@
 			</div>
 		</div>
 		<div class="ml-72 mt-6 w-full">
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<!-- <pre>{JSON.stringify(userNow, null, 2)}</pre> -->
 		</div>
 	</div>
 </main>

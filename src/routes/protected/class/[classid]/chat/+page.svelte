@@ -282,15 +282,15 @@
 					<button type="submit" class="btn btn-success">Send</button>
 				</form>
 			</div>
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<!-- <pre>{JSON.stringify(userNow, null, 2)}</pre> -->
 		</div>
 	</div>
 </main>
 
-<pre>{JSON.stringify(classNow, null, 2)}</pre>
+<!-- <pre>{JSON.stringify(classNow, null, 2)}</pre>
 <pre>{JSON.stringify(studclass, null, 2)}</pre>
 <pre>{JSON.stringify(userNow, null, 2)}</pre>
-<pre>{JSON.stringify(messages, null, 2)}</pre>
+<pre>{JSON.stringify(messages, null, 2)}</pre> -->
 
 <style>
 	.appbar {
