@@ -1,16 +1,16 @@
 <script>
 	import Themeswitcher from '$lib/themeswitcher.svelte';
+	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	// import * as monaco from 'monaco-editor';
 	import { page } from '$app/stores';
 	const { friendid } = $page.params;
 
 	export let data;
-	import { browser } from '$app/environment';
-	let monacoEditor;
-	let editorInstance;
-	let { session, supabase, userNow, friendNow } = data;
-	$: ({ session, supabase, userNow, friendNow } = data);
+	let title;
+
+	let { session, supabase, userNow, friendNow, allcodes } = data;
+	$: ({ session, supabase, userNow, friendNow, allcodes } = data);
 
 	function navigateToChats() {
 		window.open(`/protected/communicate/${friendid}/chat`, '_self');
@@ -21,86 +21,19 @@
 	function navigateToVideoCall() {
 		window.open(`/protected/communicate/${friendid}/videocall`, '_self');
 	}
-	// function initMonaco() {
-	// 	const editor = monacoEditor.editor.create(document.getElementById('editor'), {
-	// 		value: '// your code here',
-	// 		language: 'javascript'
-	// 	});
-	// }
-
-	const documentId = 4;
-	function debounce(func, wait, immediate) {
-		var timeout;
-		return function () {
-			var context = this,
-				args = arguments;
-			var later = function () {
-				timeout = null;
-				if (!immediate) func.apply(context, args);
-			};
-			var callNow = immediate && !timeout;
-			clearTimeout(timeout);
-			timeout = setTimeout(later, wait);
-			if (callNow) func.apply(context, args);
-		};
+	let showaddmodal = false;
+	function addclassmodal() {
+		showaddmodal = true;
 	}
 
-	async function initMonaco(content = '// Your code here\n') {
-		if (browser) {
-			monacoEditor = await import('monaco-editor');
-			editorInstance = monacoEditor.editor.create(document.getElementById('editor'), {
-				value: content,
-				language: 'javascript',
-				theme: 'vs-dark'
-			});
-
-			// Handle editor changes with debounce to minimize database updates
-			editorInstance.onDidChangeModelContent(
-				debounce((event) => {
-					updateDocument(editorInstance.getValue());
-				}, 1000)
-			); // Adjust debounce time as necessary
-		}
-	}
-	async function loadDocument() {
-		const { data, error } = await supabase
-			.from('documents')
-			.select('content')
-			.eq('id', documentId)
-			.single();
-
-		if (data) {
-			initMonaco(data.content);
-			subscribeToChanges();
-		} else if (error) {
-			console.error('Error loading document:', error);
-		}
-	}
-	function subscribeToChanges() {
-		supabase
-			.channel(`custom-all-channel`)
-			.on(
-				'postgres_changes',
-				{ event: 'UPDATE', schema: 'public', table: 'documents', filter: `id=eq.${documentId}` },
-				(payload) => {
-					console.log('Change received!', payload);
-					const newContent = payload.new.content;
-					if (newContent !== editorInstance.getValue()) {
-						const position = editorInstance.getPosition();
-						editorInstance.getModel().setValue(newContent);
-						if (position) {
-							editorInstance.setPosition(position);
-						}
-					}
-				}
-			)
-			.subscribe();
+	function closeclassmodal() {
+		showaddmodal = false;
 	}
 
-	async function updateDocument(content) {
-		// Debounce this call to prevent excessive database updates
-		await supabase.from('documents').update({ content }).eq('id', documentId);
+	function gotoEditor(id) {
+		window.open(`/protected/communicate/${friendid}/editorspec/${id}`, '_self');
 	}
+
 	const handleSignOut = async () => {
 		// console.log('logout start');
 		await data.supabase.auth.signOut();
@@ -108,9 +41,7 @@
 		window.open('/login', '_self');
 	};
 
-	onMount(async () => {
-		loadDocument();
-	});
+	onMount(async () => {});
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -228,8 +159,82 @@
 			</div>
 		</div>
 		<div class="ml-72 w-full mt-6">
-			<div id="editor" class="w-full min-h-screen rounded-lg shadow-lg p-4"></div>
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<button class="btn p-3" on:click={addclassmodal}>
+				<div class="flex flex-row space-x-3">
+					<img
+						src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/plus-cross-svgrepo-com.svg?t=2024-02-16T12%3A28%3A07.843Z"
+						alt="Add New Hospital Icon"
+						class="w-6 h-6 mr-2"
+					/>
+
+					<h4>Start a New code Editor</h4>
+				</div>
+			</button>
+			<h1 class="mt-4 font-extrabold text-xl">
+				Shared Codefiles between you and {friendNow.name}
+			</h1>
+			<div class="grid grid-cols-4 gap-12 mt-4">
+				{#if allcodes}
+					{#each allcodes as currCode}
+						<button
+							class="flex flex-col shadow-xl items-center justify-center p-4"
+							on:click={() => gotoEditor(currCode.id)}
+						>
+							<img
+								src="https://rxkhdqhbxkogcnbfvquu.supabase.co/storage/v1/object/public/statics/coderhub%20editor.png?t=2024-02-19T07%3A05%3A17.600Z"
+								alt="Add New Hospital Icon"
+								class="w-20 h-20 mr-2"
+							/>
+							<h2 class="text-2xl font-bold">
+								{currCode.title}
+							</h2>
+							<h4 class="font-semibold">Go to Editor</h4>
+						</button>
+					{/each}
+				{/if}
+			</div>
+			<!-- <pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<pre>{JSON.stringify(allcodes, null, 2)}</pre> -->
+			{#if showaddmodal}
+				<div
+					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"
+				>
+					<div class="bg-blue-200 p-6 rounded-lg shadow-lg max-w-md w-full m-4">
+						<div class="flex justify-between items-center mb-4">
+							<h2 class="text-2xl font-bold">Add a new class</h2>
+							<button class=" text-lg" on:click={closeclassmodal}>&times;</button>
+						</div>
+
+						<form
+							use:enhance
+							action="?/upload"
+							method="POST"
+							on:submit={() => {
+								closeclassmodal();
+							}}
+						>
+							<div class="flex flex-col space-y-6">
+								<label class="label text-left mb-3">
+									<span>File Title</span>
+
+									<input
+										class="input"
+										type="text"
+										id="title"
+										name="title"
+										bind:value={title}
+										placeholder="Enter The name of the micro course"
+									/>
+								</label>
+
+								<button type="submit" class="btn variant-filled-primary text-xl font-semibold">
+									Submit
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </main>

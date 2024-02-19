@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	// import * as monaco from 'monaco-editor';
 	import { page } from '$app/stores';
-	const { friendid } = $page.params;
+	const { friendid, id } = $page.params;
 
 	export let data;
 	import { browser } from '$app/environment';
@@ -28,7 +28,9 @@
 	// 	});
 	// }
 
-	const documentId = 4;
+	const documentId = id;
+	let docTitle;
+	let docOwner;
 	function debounce(func, wait, immediate) {
 		var timeout;
 		return function () {
@@ -65,11 +67,13 @@
 	async function loadDocument() {
 		const { data, error } = await supabase
 			.from('documents')
-			.select('content')
+			.select('*')
 			.eq('id', documentId)
 			.single();
 
 		if (data) {
+			docTitle = data.title;
+			docOwner = data.ownerid;
 			initMonaco(data.content);
 			subscribeToChanges();
 		} else if (error) {
@@ -227,9 +231,21 @@
 				</ul>
 			</div>
 		</div>
-		<div class="ml-72 w-full mt-6">
+		<div class="ml-72 w-full mt-6 mr-8">
+			<div class="flex flex-row justify-between">
+				<h1 class="font-extrabold text-2xl">
+					{docTitle}
+				</h1>
+				<div class="font-semibold mr-8">
+					{#if docOwner === userNow.id}
+						Owner:{userNow.name} Shared with: {friendNow.name}
+					{:else}
+						Owner:{friendNow.name} Shared with: {userNow.name}
+					{/if}
+				</div>
+			</div>
+
 			<div id="editor" class="w-full min-h-screen rounded-lg shadow-lg p-4"></div>
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
 		</div>
 	</div>
 </main>
