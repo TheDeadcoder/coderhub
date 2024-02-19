@@ -58,7 +58,7 @@
 				.replace(pattern_amp, '&amp;')
 				.replace(pattern_lt, '&lt;')
 				.replace(pattern_gt, '&gt;')
-				.replace(pattern_para, '&para;<br>');
+				// .replace(pattern_para, '&para;<br>');
 			switch (op) {
 				case 1:
 					html[x] = '<ins style="background:#e6ffe6;">' + text + '</ins>';
@@ -455,7 +455,7 @@
 					</div>
 				{/each}
 			</div>
-			<form id="uploadForm" method="post" enctype="multipart/form-data">
+			<!-- <form id="uploadForm" method="post" enctype="multipart/form-data">
 				<input type="file" name="files[]" webkitdirectory multiple /><br />
 			</form>
 			<div>
@@ -484,7 +484,7 @@
 						</div>
 					</div>
 				{/each}
-			</div>
+			</div> -->
 			{#if showaddmodal}
 				<div
 					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"
@@ -521,7 +521,7 @@
 									<textarea
 										class="textarea"
 										rows="2"
-										placeholder="Enter thr description..."
+										placeholder="Enter the description..."
 										id="description"
 										name="description"
 										bind:value={description}
