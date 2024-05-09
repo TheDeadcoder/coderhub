@@ -271,7 +271,7 @@
 					</a>
 				{/each}
 			</div>
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<!-- <pre>{JSON.stringify(userNow, null, 2)}</pre> -->
 		</div>
 	</div>
 </main>

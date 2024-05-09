@@ -133,11 +133,11 @@
 
 	async function realUpload() {
 		let { data: commitcount, error } = await supabase
-			.from('project')
+			.from('newProj')
 			.select('commitcount')
 			.eq('id', projNow.id);
 
-		let newCommit = commitcount + 1;
+		let newCommit = commitcount[0]['commitcount'] + 1;
 
 		const input = document.getElementById('uploadForm').querySelector('input[type=file]');
 		const files = input.files;
@@ -183,7 +183,7 @@
 
 	async function realDownload() {
 		//First Download
-		const { data: res1, error: err1 } = await supabase.storage.from('test').download('bg');
+		const { data: res1, error: err1 } = await supabase.storage.from('test').download(commit1);
 
 		const zip1 = new JSZip();
 		const unzipped1 = await zip1.loadAsync(res1);
@@ -203,7 +203,7 @@
 		printDirectoryTree(files1, '', 1);
 
 		//Second Download
-		const { data: res2, error: err2 } = await supabase.storage.from('test').download('bg_');
+		const { data: res2, error: err2 } = await supabase.storage.from('test').download(commit2);
 
 		const zip2 = new JSZip();
 		const unzipped2 = await zip2.loadAsync(res2);
@@ -312,7 +312,7 @@
 	// 	link.remove();
 	// }
 
-	onMount(async () => {});
+	let commit1, commit2;
 </script>
 
 <nav class="fixed top-0 z-50 w-full py-6 backdrop-blur-md">
@@ -479,23 +479,66 @@
 						realUpload();
 					}}>Real Upload</button
 				>
-				<!-- <button
+			</div>
+			<div>
+				{#each commits as commit}
+					<div class="max-w-md bg-white shadow-md rounded-lg overflow-hidden my-5">
+						<div class="px-6 py-4">
+							<div class="text-xl font-bold mb-2">{commit.title}</div>
+							<a href={commit.url} class="text-xl font-semibold text-blue-500 hover:underline"
+								>Commit Link</a
+							>
+						</div>
+					</div>
+				{/each}
+			</div>
+			<select
+				bind:value={commit1}
+				required
+				class="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-muted px-4 py-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2
+    focus-visible:ring-ring
+    focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+			>
+				<option value="" disabled selected hidden>-- First --</option>
+				{#each commits as commit}
+					<option value={commit.title}>{commit.title}</option>
+				{/each}
+			</select>
+			<select
+				bind:value={commit2}
+				required
+				class="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-md bg-muted px-4 py-2 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2
+    focus-visible:ring-ring
+    focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+			>
+				<option value="" disabled selected hidden>-- Second --</option>
+				{#each commits as commit}
+					<option value={commit.title}>{commit.title}</option>
+				{/each}
+			</select>
+			<div>
+				<button
 					class="btn btn-outline mt-5"
 					on:click={() => {
 						realDownload();
 					}}
-					>Real Download
-				</button> -->
+					>Compare
+				</button>
 			</div>
+			<DirectoryStructure directories={tree1} title="Tree1" />
+			<DirectoryStructure directories={tree2} title="Tree2" />
 			<div>
-				{#each commits as commit}
-					<div class="text-xl font-bold mt-6">
-						{commit.title}
+				{#each diffResults as x, index}
+					<div class="card mt-5 shadow p-5 hover:shadow-xl">
+						<p class="card-title">FileName: {x['name']}</p>
+						<div class="card-body">
+							<p>{@html x['content']}</p>
+						</div>
 					</div>
-					<a href={commit.url} class="text-xl font-semibold"> Commit Link </a>
 				{/each}
 			</div>
 		</div>
+
 	</div>
 </main>
 

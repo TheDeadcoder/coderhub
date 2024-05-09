@@ -158,7 +158,7 @@
 			<div class="text-column">
 				<button class="btn bg-blue-300" on:click={handleClick}>Go Live</button>
 			</div>
-			<pre>{JSON.stringify(friendship, null, 2)}</pre>
+			<!-- <pre>{JSON.stringify(friendship, null, 2)}</pre> -->
 		</div>
 	</div>
 </main>

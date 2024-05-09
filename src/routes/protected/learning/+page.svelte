@@ -332,9 +332,9 @@
 				{/each}
 			</div>
 
-			<pre>{JSON.stringify(userNow, null, 2)}</pre>
+			<!-- <pre>{JSON.stringify(userNow, null, 2)}</pre>
 			<pre>{JSON.stringify(classes, null, 2)}</pre>
-			<pre>{JSON.stringify(studclass, null, 2)}</pre>
+			<pre>{JSON.stringify(studclass, null, 2)}</pre> -->
 			{#if showaddmodal}
 				<div
 					class="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 transition-opacity backdrop-blur-sm"

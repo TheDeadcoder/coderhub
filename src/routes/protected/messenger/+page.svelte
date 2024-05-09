@@ -141,7 +141,7 @@
 			</div>
 		{/each}
 	</div>
-	<pre>{JSON.stringify(friendPendingwithName2, null, 2)}</pre>
+	<!-- <pre>{JSON.stringify(friendPendingwithName2, null, 2)}</pre> -->
 </div>
 
 <style>
