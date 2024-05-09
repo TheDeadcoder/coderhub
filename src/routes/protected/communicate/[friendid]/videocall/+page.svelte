@@ -27,7 +27,7 @@
 	};
 	const handleClick = () => {
 		// window.open(`/protected/call/${relationid}?uid=${relationid}`, '_self');
-		window.location.href = `/protected/call/${relationid}?uid=${relationid + 100}`;
+		window.location.href = `/protected/call/${relationid}?uid=${friendNow.id}`;
 	};
 </script>
 

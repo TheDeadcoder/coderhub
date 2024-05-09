@@ -232,7 +232,7 @@
 			{#if isLoading}
 				<span class="loading loading-spinner loading-xs"></span>
 			{/if}
-			Sign In
+			Submit
 		</button>
 	</form>
 </div>
